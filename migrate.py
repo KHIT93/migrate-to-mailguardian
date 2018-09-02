@@ -70,8 +70,6 @@ if __name__ == "__main__":
     print('Counting maillog entries to process' + chr(13))
     mysql_cursor.execute("SELECT count(id) as id__count FROM maillog")
     total = mysql_cursor.fetchone()['id__count']
-    print(total)
-    exit()
     count = 0
     print('Collecting maillog entries to process' + chr(13))
     mysql_cursor.execute("SELECT * FROM maillog")
@@ -148,8 +146,8 @@ if __name__ == "__main__":
             }
             pgsql_cursor.execute("INSERT INTO mail_transportlog (id, timestamp, message_id, transport_host, transport_type, relay_host, dsn, dsn_message, delay) VALUES('{id}', '{timestamp}', '{message_id}', '{transport_host}', '{transport_type}', '{relay_host}', '{dsn}', '{dsn_message}', '{delay}')".format(vals))
         count += 1
-    mysql_cursor.execute("SELECT count(id) FROM blacklist")
-    total = mysql_cursor.fetchone()[0]
+    mysql_cursor.execute("SELECT count(id) as id__count FROM blacklist")
+    total = mysql_cursor.fetchone()['id__count']
     count = 0
     mysql_cursor.execute("SELECT * FROM blacklist")
     for entry in mysql_cursor.fetchall():
@@ -164,8 +162,8 @@ if __name__ == "__main__":
         pgsql_cursor.execute("INSERT INTO list_entries (id, from_address, to_address, to_domain, listing_type) VALUES('{id}', '{from_address}', '{to_address}', '{to_domain}', '{listing_type}')".format(vals))
         count += 1
 
-    mysql_cursor.execute("SELECT count(id) FROM blacklist")
-    total = mysql_cursor.fetchone()[0]
+    mysql_cursor.execute("SELECT count(id) as id__count FROM blacklist")
+    total = mysql_cursor.fetchone()['id__count']
     count = 0
     mysql_cursor.execute("SELECT * FROM whitelist")
     for entry in mysql_cursor.fetchall():
@@ -181,8 +179,8 @@ if __name__ == "__main__":
         count += 1
     
     if 'smtpaccess' in tables:
-        mysql_cursor.execute("SELECT count(id) FROM smtpaccess")
-        total = mysql_cursor.fetchone()[0]
+        mysql_cursor.execute("SELECT count(id) as id__count FROM smtpaccess")
+        total = mysql_cursor.fetchone()['id__count']
         count = 0
         mysql_cursor.execute("SELECT * FROM smtpaccess")
         for entry in mysql_cursor.fetchall():
@@ -197,8 +195,8 @@ if __name__ == "__main__":
             pgsql_cursor.execute("INSERT INTO mail_smtprelay (id, ip_address, comment, active, hostname) VALUES('{id}', '{ip_address}', '{comment}', {active}, '{hostname}')".format(vals))
             count += 1
     if 'domaintable' in tables:
-        mysql_cursor.execute("SELECT count(id) FROM domaintable")
-        total = mysql_cursor.fetchone()[0]
+        mysql_cursor.execute("SELECT count(id) as id__count FROM domaintable")
+        total = mysql_cursor.fetchone()['id__count']
         count = 0
         mysql_cursor.execute("SELECT * FROM domaintable")
         for entry in mysql_cursor.fetchall():
@@ -215,8 +213,8 @@ if __name__ == "__main__":
                 'allowed_accounts': entry['accountno']
             }
             pgsql_cursor.execute("INSERT INTO doamins_domain (id, name, destination, relay_type, created_timestamp, updated_timestamp, active, catchall, allowed_accounts) VALUES('{id}', '{name}', '{destination}', '{relay_type}', '{created_timestamp}', '{updated_timestamp}', {active}, {catchall}, {allowed_accounts})".format(vals))
-    mysql_cursor.execute("SELECT count(id) FROM users")
-    total = mysql_cursor.fetchone()[0]
+    mysql_cursor.execute("SELECT count(id) as id__count FROM users")
+    total = mysql_cursor.fetchone()['id__count']
     count = 0
     mysql_cursor.execute("SELECT * FROM users")
     for user in mysql_cursor.fetchall():
