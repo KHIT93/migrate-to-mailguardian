@@ -73,7 +73,7 @@ if __name__ == "__main__":
     count = 0
     print('Collecting maillog entries to process' + chr(13))
     mysql_cursor.execute("SELECT * FROM maillog")
-    for message in mysql_cursor.fetchall():
+    for message in mysql_cursor:
         print('[{0}%] :: Processing message {1}'.format((int)(count/total), message['id']))
         vals = {
             'id': uuid.uuid4(),
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     total = mysql_cursor.fetchone()['id__count']
     count = 0
     mysql_cursor.execute("SELECT * FROM blacklist")
-    for entry in mysql_cursor.fetchall():
+    for entry in mysql_cursor:
         print('[{0}%] :: Processing blacklist {1}'.format((int)(count/total), message['id']))
         vals = {
             'id': uuid.uuid4(),
@@ -166,7 +166,7 @@ if __name__ == "__main__":
     total = mysql_cursor.fetchone()['id__count']
     count = 0
     mysql_cursor.execute("SELECT * FROM whitelist")
-    for entry in mysql_cursor.fetchall():
+    for entry in mysql_cursor:
         print('[{0}%] :: Processing whitelist {1}'.format((int)(count/total), message['id']))
         vals = {
             'id': uuid.uuid4(),
@@ -183,7 +183,7 @@ if __name__ == "__main__":
         total = mysql_cursor.fetchone()['id__count']
         count = 0
         mysql_cursor.execute("SELECT * FROM smtpaccess")
-        for entry in mysql_cursor.fetchall():
+        for entry in mysql_cursor:
             print('[{0}%] :: Processing SMTP relay {1}'.format((int)(count/total), message['id']))
             vals = {
                 'id': uuid.uuid4(),
@@ -199,7 +199,7 @@ if __name__ == "__main__":
         total = mysql_cursor.fetchone()['id__count']
         count = 0
         mysql_cursor.execute("SELECT * FROM domaintable")
-        for entry in mysql_cursor.fetchall():
+        for entry in mysql_cursor:
             print('[{0}%] :: Processing domain {1}'.format((int)(count/total), message['id']))
             vals = {
                 'id': uuid.uuid4(),
@@ -217,7 +217,7 @@ if __name__ == "__main__":
     total = mysql_cursor.fetchone()['id__count']
     count = 0
     mysql_cursor.execute("SELECT * FROM users")
-    for user in mysql_cursor.fetchall():
+    for user in mysql_cursor:
         print('[{0}%] :: Processing user {1}'.format((int)(count/total), message['id']))
         vals = {
             'id': uuid.uuid4(),
