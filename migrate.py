@@ -68,8 +68,8 @@ if __name__ == "__main__":
 
     mysql_cursor = mysql_conn.cursor(dictionary=True)
     print('Counting maillog entries to process' + chr(13))
-    mysql_cursor.execute("SELECT count(id) FROM maillog")
-    total = mysql_cursor.fetchone()
+    mysql_cursor.execute("SELECT count(id) as id__count FROM maillog")
+    total = mysql_cursor.fetchone()['id__count']
     print(total)
     exit()
     count = 0
