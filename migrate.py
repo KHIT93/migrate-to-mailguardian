@@ -132,8 +132,9 @@ if __name__ == "__main__":
             'message_id': message_id
         }
         pgsql_cursor.execute("INSERT INTO mail_spamreport (id, contents, message_id) VALUES ('{id}', '{contents}', '{message_id}')".format(**vals))
-        mysql_cursor.execute("SELECT * FROM mtalog WHERE msg_id={0}".format(message_id))
-        for entry in mysql_cursor.fetchall():
+        transport_log_cursor = mysql_cursor.cursor()
+        transport_log_cursor.execute("SELECT * FROM mtalog WHERE msg_id={0}".format(message_id))
+        for entry in transport_log_cursor:
             vals = {
                 'id': uuid.uuid4(),
                 'timestamp': entry['timestamp'],
@@ -240,8 +241,9 @@ if __name__ == "__main__":
             pgsql_cursor.execute("SELECT id from domains_domain WHERE name='{0}' LIMIT 1".format(user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
             domain_id = pgsql_cursor.fetchone()[0]
             pgsql_cursor.execute("INSERT INTO core_user_domains (user_id, domain_id) VALUES('{0}', '{1}')".format(user_id, domain_id))
-            mysql_cursor.execute("SELECT * FROM domaintable WHERE domainadmin='{0}'".format(user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
-            for entry in mysql_cursor.fetchall():
+            domains_cursor = mysql_cursor.cursor()
+            domains_cursor.execute("SELECT * FROM domaintable WHERE domainadmin='{0}'".format(user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
+            for entry in domains_cursor.fetchall():
                 vals = {
                     'id': uuid.uuid4(),
                     'name': entry['domainname'],
