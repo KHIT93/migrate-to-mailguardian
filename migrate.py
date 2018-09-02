@@ -101,40 +101,40 @@ if __name__ == "__main__":
             'infected': True if message['virusinfected'] == 1 or message['nameinfected'] == 1 or message['otherinfected'] == 1 else False,
             'released': True if message['released'] == 1 else False
         }
-        pgsql_cursor.execute("INSERT INTO mail_message (id, from_address, from_domain, to_address, to_domain, subject, client_ip, mailscanner_hostname, spam_score, timestamp, token, whitelisted, blacklisted, is_spam, is_rbl_listed, quarantined, infected, size, mailq_id, is_mcp, mcp_score, date, released) VALUES('{id}', '{from_address}', '{from_domain}', '{to_address}', '{to_domain}', '{subject}', '{client_ip}', '{mailscanner_hostname}', {spam_score}, '{timestamp}', '{token}', {whitelisted}, {blacklisted}, {is_spam}, {is_rbl_listed}, {quarantined}, {infected}, {size}, '{mailq_id}', {is_mcp}, {mcp_score}, '{date}', {released}) RETURNING id".format(**vals))
+        pgsql_cursor.execute("INSERT INTO mail_message (id, from_address, from_domain, to_address, to_domain, subject, client_ip, mailscanner_hostname, spam_score, timestamp, token, whitelisted, blacklisted, is_spam, is_rbl_listed, quarantined, infected, size, mailq_id, is_mcp, mcp_score, date, released) VALUES(%(id)s, %(from_address)s, %(from_domain)s, %(to_address)s, %(to_domain)s, %(subject)s, %(client_ip)s, %(mailscanner_hostname)s, {spam_score}, %(timestamp)s, %(token)s, {whitelisted}, {blacklisted}, {is_spam}, {is_rbl_listed}, {quarantined}, {infected}, {size}, %(mailq_id)s, {is_mcp}, {mcp_score}, %(date)s, {released}) RETURNING id".format(**vals))
         message_id = pgsql_cursor.fetchone()[0]
         vals = {
             'id': uuid.uuid4(),
             'contents': message['headers'],
             'message_id': message_id
         }
-        pgsql_cursor.execute("INSERT INTO mail_headers (id, contents, message_id) VALUES ('{id}', '{contents}', '{message_id}')".format(**vals))
+        pgsql_cursor.execute("INSERT INTO mail_headers (id, contents, message_id) VALUES (%(id)s, %(contents)s, %(message_id)s)".format(**vals))
         vals = {
             'id': uuid.uuid4(),
             'contents': message['report'],
             'message_id': message_id
         }
-        pgsql_cursor.execute("INSERT INTO mail_mailscannerreport (id, contents, message_id) VALUES ('{id}', '{contents}', '{message_id}')".format(**vals))
+        pgsql_cursor.execute("INSERT INTO mail_mailscannerreport (id, contents, message_id) VALUES (%(id)s, %(contents)s, %(message_id)s)".format(**vals))
         vals = {
             'id': uuid.uuid4(),
             'contents': message['mcpreport'],
             'message_id': message_id
         }
-        pgsql_cursor.execute("INSERT INTO mail_mcpreport (id, contents, message_id) VALUES ('{id}', '{contents}', '{message_id}')".format(**vals))
+        pgsql_cursor.execute("INSERT INTO mail_mcpreport (id, contents, message_id) VALUES (%(id)s, %(contents)s, %(message_id)s)".format(**vals))
         vals = {
             'id': uuid.uuid4(),
             'contents': message['rblspamreport'],
             'message_id': message_id
         }
-        pgsql_cursor.execute("INSERT INTO mail_rblreport (id, contents, message_id) VALUES ('{id}', '{contents}', '{message_id}')".format(**vals))
+        pgsql_cursor.execute("INSERT INTO mail_rblreport (id, contents, message_id) VALUES (%(id)s, %(contents)s, %(message_id)s)".format(**vals))
         vals = {
             'id': uuid.uuid4(),
             'contents': message['report'],
             'message_id': message_id
         }
-        pgsql_cursor.execute("INSERT INTO mail_spamreport (id, contents, message_id) VALUES ('{id}', '{contents}', '{message_id}')".format(**vals))
+        pgsql_cursor.execute("INSERT INTO mail_spamreport (id, contents, message_id) VALUES (%(id)s, %(contents)s, %(message_id)s)".format(**vals))
         transport_log_cursor = mysql_conn2.cursor()
-        transport_log_cursor.execute("SELECT * FROM mtalog WHERE msg_id='{0}'".format(message_id))
+        transport_log_cursor.execute("SELECT * FROM mtalog WHERE msg_id=%(0)s".format(message_id))
         for entry in transport_log_cursor:
             vals = {
                 'id': uuid.uuid4(),
@@ -147,7 +147,7 @@ if __name__ == "__main__":
                 'dsn_message': entry['status'],
                 'delay': entry['delay']
             }
-            pgsql_cursor.execute("INSERT INTO mail_transportlog (id, timestamp, message_id, transport_host, transport_type, relay_host, dsn, dsn_message, delay) VALUES('{id}', '{timestamp}', '{message_id}', '{transport_host}', '{transport_type}', '{relay_host}', '{dsn}', '{dsn_message}', '{delay}')".format(**vals))
+            pgsql_cursor.execute("INSERT INTO mail_transportlog (id, timestamp, message_id, transport_host, transport_type, relay_host, dsn, dsn_message, delay) VALUES(%(id)s, %(timestamp)s, %(message_id)s, %(transport_host)s, %(transport_type)s, %(relay_host)s, %(dsn)s, %(dsn_message)s, %(delay)s)".format(**vals))
         count += 1
     mysql_cursor.execute("SELECT count(id) as id__count FROM blacklist")
     total = mysql_cursor.fetchone()['id__count']
@@ -162,7 +162,7 @@ if __name__ == "__main__":
             'to_domain': (entry['to_domain'] if entry['to_domain'] != 'default' else '*') if entry['to_domain'] else '',
             'listing_type': 'blacklisted'
         }
-        pgsql_cursor.execute("INSERT INTO list_entries (id, from_address, to_address, to_domain, listing_type) VALUES('{id}', '{from_address}', '{to_address}', '{to_domain}', '{listing_type}')".format(**vals))
+        pgsql_cursor.execute("INSERT INTO list_entries (id, from_address, to_address, to_domain, listing_type) VALUES(%(id)s, %(from_address)s, %(to_address)s, %(to_domain)s, %(listing_type)s)".format(**vals))
         count += 1
 
     mysql_cursor.execute("SELECT count(id) as id__count FROM blacklist")
@@ -178,7 +178,7 @@ if __name__ == "__main__":
             'to_domain': (entry['to_domain'] if entry['to_domain'] != 'default' else '*') if entry['to_domain'] else '',
             'listing_type': 'whitelisted'
         }
-        pgsql_cursor.execute("INSERT INTO list_entries (id, from_address, to_address, to_domain, listing_type) VALUES('{id}', '{from_address}', '{to_address}', '{to_domain}', '{listing_type}')".format(**vals))
+        pgsql_cursor.execute("INSERT INTO list_entries (id, from_address, to_address, to_domain, listing_type) VALUES(%(id)s, %(from_address)s, %(to_address)s, %(to_domain)s, %(listing_type)s)".format(**vals))
         count += 1
     
     if 'smtpaccess' in tables:
@@ -195,7 +195,7 @@ if __name__ == "__main__":
                 'active': True,
                 'hostname': entry['smtpvalue']
             }
-            pgsql_cursor.execute("INSERT INTO mail_smtprelay (id, ip_address, comment, active, hostname) VALUES('{id}', '{ip_address}', '{comment}', {active}, '{hostname}')".format(**vals))
+            pgsql_cursor.execute("INSERT INTO mail_smtprelay (id, ip_address, comment, active, hostname) VALUES(%(id)s, %(ip_address)s, %(comment)s, {active}, %(hostname)s)".format(**vals))
             count += 1
     if 'domaintable' in tables:
         mysql_cursor.execute("SELECT count(id) as id__count FROM domaintable")
@@ -215,7 +215,7 @@ if __name__ == "__main__":
                 'catchall': True,
                 'allowed_accounts': entry['accountno']
             }
-            pgsql_cursor.execute("INSERT INTO doamins_domain (id, name, destination, relay_type, created_timestamp, updated_timestamp, active, catchall, allowed_accounts) VALUES('{id}', '{name}', '{destination}', '{relay_type}', '{created_timestamp}', '{updated_timestamp}', {active}, {catchall}, {allowed_accounts})".format(**vals))
+            pgsql_cursor.execute("INSERT INTO doamins_domain (id, name, destination, relay_type, created_timestamp, updated_timestamp, active, catchall, allowed_accounts) VALUES(%(id)s, %(name)s, %(destination)s, %(relay_type)s, %(created_timestamp)s, %(updated_timestamp)s, {active}, {catchall}, {allowed_accounts})".format(**vals))
     mysql_cursor.execute("SELECT count(id) as id__count FROM users")
     total = mysql_cursor.fetchone()['id__count']
     count = 0
@@ -236,14 +236,14 @@ if __name__ == "__main__":
             'skip_scan': True if user['noscan'] == 1 else False,
             'last_login': None if user['last_login'] == -1 else user['last_login']
         }
-        pgsql_cursor.execute("INSERT INTO core_user (id, email, first_name, is_domain_admin, is_staff, is_superuser, is_active, daily_quarantine_report, custom_spam_score, custom_highspam_score, skip_scan, last_login) VALUES('{id}', '{email}', '{first_name}', {is_domain_admin}, {is_staff}, {is_superuser}, {is_active}, {daily_quarantine_report}, {custom_spam_score}, {custom_highspam_score}, {skip_scan}, '{last_login}') RETURNING id".format(**vals))
+        pgsql_cursor.execute("INSERT INTO core_user (id, email, first_name, is_domain_admin, is_staff, is_superuser, is_active, daily_quarantine_report, custom_spam_score, custom_highspam_score, skip_scan, last_login) VALUES(%(id)s, %(email)s, %(first_name)s, {is_domain_admin}, {is_staff}, {is_superuser}, {is_active}, {daily_quarantine_report}, {custom_spam_score}, {custom_highspam_score}, {skip_scan}, %(last_login)s) RETURNING id".format(**vals))
         if 'domaintable' in tables:
             user_id = pgsql_cursor.fetchone()[0]
-            pgsql_cursor.execute("SELECT id from domains_domain WHERE name='{0}' LIMIT 1".format(user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
+            pgsql_cursor.execute("SELECT id from domains_domain WHERE name=%(0)s LIMIT 1".format(user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
             domain_id = pgsql_cursor.fetchone()[0]
-            pgsql_cursor.execute("INSERT INTO core_user_domains (user_id, domain_id) VALUES('{0}', '{1}')".format(user_id, domain_id))
+            pgsql_cursor.execute("INSERT INTO core_user_domains (user_id, domain_id) VALUES(%(0)s, %(1)s)".format(user_id, domain_id))
             domains_cursor = mysql_conn2.cursor()
-            domains_cursor.execute("SELECT * FROM domaintable WHERE domainadmin='{0}'".format(user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
+            domains_cursor.execute("SELECT * FROM domaintable WHERE domainadmin=%(0)s".format(user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
             for entry in domains_cursor.fetchall():
                 vals = {
                     'id': uuid.uuid4(),
@@ -256,7 +256,7 @@ if __name__ == "__main__":
                     'catchall': True,
                     'allowed_accounts': entry['accountno']
                 }
-                pgsql_cursor.execute("INSERT INTO doamins_domain (id, name, destination, relay_type, created_timestamp, updated_timestamp, active, catchall, allowed_accounts) VALUES('{id}', '{name}', '{destination}', '{relay_type}', '{created_timestamp}', '{updated_timestamp}', {active}, {catchall}, {allowed_accounts})".format(**vals))
+                pgsql_cursor.execute("INSERT INTO doamins_domain (id, name, destination, relay_type, created_timestamp, updated_timestamp, active, catchall, allowed_accounts) VALUES(%(id)s, %(name)s, %(destination)s, %(relay_type)s, %(created_timestamp)s, %(updated_timestamp)s, {active}, {catchall}, {allowed_accounts})".format(**vals))
         count += 1
 
     mysql_conn.close()
