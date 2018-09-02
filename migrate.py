@@ -77,7 +77,7 @@ if __name__ == "__main__":
     for message in mysql_cursor:
         print('[{0}%] :: Processing message {1}'.format((int)(count/total), message['id']))
         vals = {
-            'id': uuid.uuid4(),
+            'id': str(uuid.uuid4()),
             'from_address': message['from_address'],
             'from_domain': message['from_domain'],
             'to_address': message['to_address'],
@@ -104,31 +104,31 @@ if __name__ == "__main__":
         pgsql_cursor.execute("INSERT INTO mail_message (id, from_address, from_domain, to_address, to_domain, subject, client_ip, mailscanner_hostname, spam_score, timestamp, token, whitelisted, blacklisted, is_spam, is_rbl_listed, quarantined, infected, size, mailq_id, is_mcp, mcp_score, date, released) VALUES(%(id)s, %(from_address)s, %(from_domain)s, %(to_address)s, %(to_domain)s, %(subject)s, %(client_ip)s, %(mailscanner_hostname)s, %(spam_score)s, %(timestamp)s, %(token)s, %(whitelisted)s, %(blacklisted)s, %(is_spam)s, %(is_rbl_listed)s, %(quarantined)s, %(infected)s, %(size)s, %(mailq_id)s, %(is_mcp)s, %(mcp_score)s, %(date)s, %(released)s) RETURNING id", (vals))
         message_id = pgsql_cursor.fetchone()[0]
         vals = {
-            'id': uuid.uuid4(),
+            'id': str(uuid.uuid4()),
             'contents': message['headers'],
             'message_id': message_id
         }
         pgsql_cursor.execute("INSERT INTO mail_headers (id, contents, message_id) VALUES (%(id)s, %(contents)s, %(message_id)s)", (vals))
         vals = {
-            'id': uuid.uuid4(),
+            'id': str(uuid.uuid4()),
             'contents': message['report'],
             'message_id': message_id
         }
         pgsql_cursor.execute("INSERT INTO mail_mailscannerreport (id, contents, message_id) VALUES (%(id)s, %(contents)s, %(message_id)s)", (vals))
         vals = {
-            'id': uuid.uuid4(),
+            'id': str(uuid.uuid4()),
             'contents': message['mcpreport'],
             'message_id': message_id
         }
         pgsql_cursor.execute("INSERT INTO mail_mcpreport (id, contents, message_id) VALUES (%(id)s, %(contents)s, %(message_id)s)", (vals))
         vals = {
-            'id': uuid.uuid4(),
+            'id': str(uuid.uuid4()),
             'contents': message['rblspamreport'],
             'message_id': message_id
         }
         pgsql_cursor.execute("INSERT INTO mail_rblreport (id, contents, message_id) VALUES (%(id)s, %(contents)s, %(message_id)s)", (vals))
         vals = {
-            'id': uuid.uuid4(),
+            'id': str(uuid.uuid4()),
             'contents': message['report'],
             'message_id': message_id
         }
@@ -137,7 +137,7 @@ if __name__ == "__main__":
         transport_log_cursor.execute("SELECT * FROM mtalog WHERE msg_id=%s", (message_id))
         for entry in transport_log_cursor:
             vals = {
-                'id': uuid.uuid4(),
+                'id': str(uuid.uuid4()),
                 'timestamp': entry['timestamp'],
                 'message_id': message_id,
                 'transport_host': entry['host'],
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     for entry in mysql_cursor:
         print('[{0}%] :: Processing blacklist {1}'.format((int)(count/total), message['id']))
         vals = {
-            'id': uuid.uuid4(),
+            'id': str(uuid.uuid4()),
             'from_address': '*' if entry['from_address'] == 'default' else entry['from_address'],
             'to_address': '*' if entry['to_address'] == 'default' else entry['to_address'],
             'to_domain': (entry['to_domain'] if entry['to_domain'] != 'default' else '*') if entry['to_domain'] else '',
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     for entry in mysql_cursor:
         print('[{0}%] :: Processing whitelist {1}'.format((int)(count/total), message['id']))
         vals = {
-            'id': uuid.uuid4(),
+            'id': str(uuid.uuid4()),
             'from_address': '*' if entry['from_address'] == 'default' else entry['from_address'],
             'to_address': '*' if entry['to_address'] == 'default' else entry['to_address'],
             'to_domain': (entry['to_domain'] if entry['to_domain'] != 'default' else '*') if entry['to_domain'] else '',
@@ -189,7 +189,7 @@ if __name__ == "__main__":
         for entry in mysql_cursor:
             print('[{0}%] :: Processing SMTP relay {1}'.format((int)(count/total), message['id']))
             vals = {
-                'id': uuid.uuid4(),
+                'id': str(uuid.uuid4()),
                 'ip_address': entry['smtpvalue'],
                 'comment': entry['comment'],
                 'active': True,
@@ -205,7 +205,7 @@ if __name__ == "__main__":
         for entry in mysql_cursor:
             print('[{0}%] :: Processing domain {1}'.format((int)(count/total), message['id']))
             vals = {
-                'id': uuid.uuid4(),
+                'id': str(uuid.uuid4()),
                 'name': entry['domainname'],
                 'destination': entry['relaymap'],
                 'relay_type': entry['relaytype'],
@@ -223,7 +223,7 @@ if __name__ == "__main__":
     for user in mysql_cursor:
         print('[{0}%] :: Processing user {1}'.format((int)(count/total), message['id']))
         vals = {
-            'id': uuid.uuid4(),
+            'id': str(uuid.uuid4()),
             'email': user['username'] if '@' in user['username'] else 'admin@' . user['username'],
             'first_name': user['fullname'],
             'is_domain_admin': True if user['type'] == 'D' else False,
