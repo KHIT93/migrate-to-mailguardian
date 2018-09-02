@@ -18,44 +18,47 @@ mysql_conn = None
 pgsql_conn = None
 
 if __name__ == "__main__":
-    # with open(args.mailwatch_config, 'r') as f:
-    #     for line in f:
-    #         if "define('DB_USER'," in line:
-    #             mysql_config['username'] = line.replace("define('DB_USER', '", "").replace("');", "")
-    #         if "define('DB_PASS'," in line:
-    #             mysql_config['password'] = line.replace("define('DB_PASS', '", "").replace("');", "")
-    #         if "define('DB_HOST'," in line:
-    #             mysql_config['host'] = line.replace("define('DB_HOST', '", "").replace("');", "")
-    #         if "define('DB_NAME'," in line:
-    #             mysql_config['name'] = line.replace("define('DB_NAME', '", "").replace("');", "")
+    with open(args.mailwatch_config, 'r') as f:
+        for line in f:
+            if "define('DB_USER'," in line:
+                mysql_config['username'] = line.replace("define('DB_USER', '", "").replace("');", "")
+            if "define('DB_PASS'," in line:
+                mysql_config['password'] = line.replace("define('DB_PASS', '", "").replace("');", "")
+            if "define('DB_HOST'," in line:
+                mysql_config['host'] = line.replace("define('DB_HOST', '", "").replace("');", "")
+            if "define('DB_NAME'," in line:
+                mysql_config['name'] = line.replace("define('DB_NAME', '", "").replace("');", "")
 
-    # with open(args.mailguardian_config, 'r') as f:
-    #     data = json.load(f)
-    #     pgsql_config['username'] = data['database']['user']
-    #     pgsql_config['password'] = data['database']['password']
-    #     pgsql_config['host'] = data['database']['host']
-    #     pgsql_config['name'] = data['database']['name']
-    #     pgsql_config['port'] = data['database']['port']
-    #     if 'options' in data['database']:
-    #         if 'sslmode' in data['database']['options']:
-    #             pgsql_config['sslmode'] = data['database']['options']['sslmode']
+    with open(args.mailguardian_config, 'r') as f:
+        data = json.load(f)
+        pgsql_config['username'] = data['database']['user']
+        pgsql_config['password'] = data['database']['password']
+        pgsql_config['host'] = data['database']['host']
+        pgsql_config['name'] = data['database']['name']
+        pgsql_config['port'] = data['database']['port']
+        if 'options' in data['database']:
+            if 'sslmode' in data['database']['options']:
+                pgsql_config['sslmode'] = data['database']['options']['sslmode']
+
+    print(mysql_config)
+    print(pgsql_config)
+    exit()
 
     try:
-        # mysql_conn = MySQLdb.connect(host=mysql_config['host'], user=mysql_config['username'], passwd=mysql_config['password'], db=mysql_config['name'])
-        mysql_conn = mysql.connector.connect(host='172.16.240.7', user='mailscanner', password='mailscanner', database='mailscanner')
+        mysql_conn = MySQLdb.connect(host=mysql_config['host'], user=mysql_config['username'], passwd=mysql_config['password'], db=mysql_config['name'])
     except mysql.connector.Error as e:
         print(e)
         exit()
 
     print('Successfully connected to source MySQL database for MailWatch' + chr(13))
     
-    # try:
-    #     pgsql_conn = psycopg2.connect(dbname=pgsql_config['name'], user=pgsql_config['username'], password=pgsql_config['password'], host=pgsql_config['host'], port=pgsql_config['port'], sslmode=pgsql_config['sslmode'])
-    # except psycopg2.OperationalError as e:
-    #     print(e)
-    #     exit()
+    try:
+        pgsql_conn = psycopg2.connect(dbname=pgsql_config['name'], user=pgsql_config['username'], password=pgsql_config['password'], host=pgsql_config['host'], port=pgsql_config['port'], sslmode=pgsql_config['sslmode'])
+    except psycopg2.OperationalError as e:
+        print(e)
+        exit()
 
-    # print('Successfully connected to the destination PostgreSQL database for MailGuardian' + chr(13))
+    print('Successfully connected to the destination PostgreSQL database for MailGuardian' + chr(13))
     
     print('Successfully connected to source and destination datastorage' + chr(13))
     pgsql_cursor = pgsql_conn.cursor()
