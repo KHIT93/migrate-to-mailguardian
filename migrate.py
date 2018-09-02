@@ -1,4 +1,4 @@
-import mysql.connector
+import mysql
 import psycopg2
 import argparse
 import json
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     exit()
 
     try:
-        mysql_conn = MySQLdb.connect(host=mysql_config['host'], user=mysql_config['username'], passwd=mysql_config['password'], db=mysql_config['name'])
+        mysql_conn = mysql.connector.connect(host=mysql_config['host'], user=mysql_config['username'], passwd=mysql_config['password'], db=mysql_config['name'])
     except mysql.connector.Error as e:
         print(e)
         exit()
