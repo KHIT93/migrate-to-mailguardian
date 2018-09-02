@@ -85,7 +85,7 @@ if __name__ == "__main__":
             'client_ip': message['clientip'],
             'mailscanner_hostname': message['hostname'],
             'spam_score': message['sascore'],
-            'mcp_score': message['mcpsascore'],
+            'mcp_score': message['mcpsascore'] if message['mcpsascore'] else 0.00,
             'timestamp': message['timestamp'],
             'date': message['date'],
             'size': message['size'],
