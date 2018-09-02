@@ -3,6 +3,8 @@ import psycopg2
 import argparse
 import json
 import uuid
+import datetime
+import time
 
 parser = argparse.ArgumentParser()
 
@@ -16,6 +18,8 @@ pgsql_config = {}
 src = {}
 mysql_conn = None
 pgsql_conn = None
+start_time = datetime.datetime.now()
+stop_time = None
 
 if __name__ == "__main__":
     with open(args.mailwatch_config, 'r') as f:
@@ -75,7 +79,7 @@ if __name__ == "__main__":
     print('Collecting maillog entries to process' + chr(13))
     mysql_cursor.execute("SELECT * FROM maillog")
     for message in mysql_cursor:
-        print('[{0}%] :: Processing message {1}'.format((int)(count/total), message['id']))
+        print('[{0}%] :: Processing message {1}'.format(round(count/total, 2), message['id']))
         vals = {
             'id': str(uuid.uuid4()),
             'from_address': message['from_address'],
@@ -154,7 +158,7 @@ if __name__ == "__main__":
     count = 0
     mysql_cursor.execute("SELECT * FROM blacklist")
     for entry in mysql_cursor:
-        print('[{0}%] :: Processing blacklist {1}'.format((int)(count/total), message['id']))
+        print('[{0}%] :: Processing blacklist {1}'.format(round(count/total, 2), message['id']))
         vals = {
             'id': str(uuid.uuid4()),
             'from_address': '*' if entry['from_address'] == 'default' else entry['from_address'],
@@ -170,7 +174,7 @@ if __name__ == "__main__":
     count = 0
     mysql_cursor.execute("SELECT * FROM whitelist")
     for entry in mysql_cursor:
-        print('[{0}%] :: Processing whitelist {1}'.format((int)(count/total), message['id']))
+        print('[{0}%] :: Processing whitelist {1}'.format(round(count/total, 2), message['id']))
         vals = {
             'id': str(uuid.uuid4()),
             'from_address': '*' if entry['from_address'] == 'default' else entry['from_address'],
@@ -187,7 +191,7 @@ if __name__ == "__main__":
         count = 0
         mysql_cursor.execute("SELECT * FROM smtpaccess")
         for entry in mysql_cursor:
-            print('[{0}%] :: Processing SMTP relay {1}'.format((int)(count/total), message['id']))
+            print('[{0}%] :: Processing SMTP relay {1}'.format(round(count/total, 2), message['id']))
             vals = {
                 'id': str(uuid.uuid4()),
                 'ip_address': entry['smtpvalue'],
@@ -203,7 +207,7 @@ if __name__ == "__main__":
         count = 0
         mysql_cursor.execute("SELECT * FROM domaintable")
         for entry in mysql_cursor:
-            print('[{0}%] :: Processing domain {1}'.format((int)(count/total), message['id']))
+            print('[{0}%] :: Processing domain {1}'.format(round(count/total, 2), message['id']))
             vals = {
                 'id': str(uuid.uuid4()),
                 'name': entry['domainname'],
@@ -221,7 +225,7 @@ if __name__ == "__main__":
     count = 0
     mysql_cursor.execute("SELECT * FROM users")
     for user in mysql_cursor:
-        print('[{0}%] :: Processing user {1}'.format((int)(count/total), message['id']))
+        print('[{0}%] :: Processing user {1}'.format(round(count/total, 2), message['id']))
         vals = {
             'id': str(uuid.uuid4()),
             'email': user['username'] if '@' in user['username'] else 'admin@' . user['username'],
@@ -254,3 +258,7 @@ if __name__ == "__main__":
 
     pgsql_cursor.close()
     pgsql_conn.close()
+    stop_time = datetime.datetime.now()
+    start_ts = time.mktime(start_time.timetuple())
+    stop_ts = time.mktime(stop_time.timetuple())
+    print('Started {0} and stopped {1}. Total time spent is {2} minutes'.format(start_time, stop_time, int(start_ts-stop_ts) / 60))
