@@ -134,7 +134,7 @@ if __name__ == "__main__":
         }
         pgsql_cursor.execute("INSERT INTO mail_spamreport (id, contents, message_id) VALUES (%(id)s, %(contents)s, %(message_id)s)", (vals))
         transport_log_cursor = mysql_conn2.cursor()
-        transport_log_cursor.execute("SELECT * FROM mtalog WHERE msg_id=%s", (message_id))
+        transport_log_cursor.execute("SELECT * FROM mtalog WHERE msg_id={0}".format(message_id))
         for entry in transport_log_cursor:
             vals = {
                 'id': str(uuid.uuid4()),
@@ -239,13 +239,13 @@ if __name__ == "__main__":
         pgsql_cursor.execute("INSERT INTO core_user (id, email, first_name, is_domain_admin, is_staff, is_superuser, is_active, daily_quarantine_report, custom_spam_score, custom_highspam_score, skip_scan, last_login) VALUES(%(id)s, %(email)s, %(first_name)s, %(is_domain_admin)s, %(is_staff)s, %(is_superuser)s, %(is_active)s, %(daily_quarantine_report)s, %(custom_spam_score)s, %(custom_highspam_score)s, %(skip_scan)s, %(last_login)s) RETURNING id", (vals))
         if 'domaintable' in tables:
             user_id = pgsql_cursor.fetchone()[0]
-            pgsql_cursor.execute("SELECT id from domains_domain WHERE name=%s LIMIT 1", (user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
+            pgsql_cursor.execute("SELECT id from domains_domain WHERE name={0} LIMIT 1".format(user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
             domain_id = pgsql_cursor.fetchone()[0]
             pgsql_cursor.execute("INSERT INTO core_user_domains (user_id, domain_id) VALUES(%s, %s)", (user_id, domain_id))
             domains_cursor = mysql_conn2.cursor()
-            domains_cursor.execute("SELECT * FROM domaintable WHERE domainadmin=%s", (user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
+            domains_cursor.execute("SELECT * FROM domaintable WHERE domainadmin={0}".format(user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
             for entry in domains_cursor:
-                pgsql_cursor.execute("SELECT id FROM domains_domain WHERE name=%s", (entry['domainname']))
+                pgsql_cursor.execute("SELECT id FROM domains_domain WHERE name={0}".format(entry['domainname']))
                 domain_id = pgsql_cursor.fetchone()[0]
                 pgsql_cursor.execute("INSERT INTO core_user_domains (user_id, domain_id) VALUES(%s, %s)", (user_id, domain_id))
         count += 1
