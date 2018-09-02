@@ -100,7 +100,7 @@ if __name__ == "__main__":
             'infected': True if message['virusinfected'] == 1 or message['nameinfected'] == 1 or message['otherinfected'] == 1 else False,
             'released': True if message['released'] == 1 else False
         }
-        pgsql_cursor.execute("INSERT INTO mail_message (id, from_address, from_domain, to_address, to_domain, subject, client_ip, mailscanner_hostname, spam_score, timestamp, token, whitelisted, blacklisted, is_spam, is_rbl_listed, quarantined, infected, size, mailq_id, is_mcp, mcp_score, date, released) VALUES('{id}', '{from_address}', '{from_domain}', '{to_address}', '{to_domain}', '{subject}', '{client_ip}', '{mailscanner_hostname}', {spam_score}, {timestamp}, '{token}', {whitelisted}, {blacklisted}, {is_spam}, {is_rbl_listed}, {quarantined}, {infected}, {size}, '{mailq_id}', {is_mcp}, {mcp_score}, '{date}', {released}) RETURNING id".format(**vals))
+        pgsql_cursor.execute("INSERT INTO mail_message (id, from_address, from_domain, to_address, to_domain, subject, client_ip, mailscanner_hostname, spam_score, timestamp, token, whitelisted, blacklisted, is_spam, is_rbl_listed, quarantined, infected, size, mailq_id, is_mcp, mcp_score, date, released) VALUES('{id}', '{from_address}', '{from_domain}', '{to_address}', '{to_domain}', '{subject}', '{client_ip}', '{mailscanner_hostname}', {spam_score}, '{timestamp}', '{token}', {whitelisted}, {blacklisted}, {is_spam}, {is_rbl_listed}, {quarantined}, {infected}, {size}, '{mailq_id}', {is_mcp}, {mcp_score}, '{date}', {released}) RETURNING id".format(**vals))
         message_id = pgsql_cursor.fetchone()[0]
         vals = {
             'id': uuid.uuid4(),
