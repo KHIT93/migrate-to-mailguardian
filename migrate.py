@@ -21,13 +21,13 @@ if __name__ == "__main__":
     with open(args.mailwatch_config, 'r') as f:
         for line in f:
             if "define('DB_USER'," in line:
-                mysql_config['username'] = line.replace("define('DB_USER', '", "").replace("');", "")
+                mysql_config['username'] = line.replace("define('DB_USER', '", "").replace("');", "").rstrip()
             if "define('DB_PASS'," in line:
-                mysql_config['password'] = line.replace("define('DB_PASS', '", "").replace("');", "")
+                mysql_config['password'] = line.replace("define('DB_PASS', '", "").replace("');", "").rstrip()
             if "define('DB_HOST'," in line:
-                mysql_config['host'] = line.replace("define('DB_HOST', '", "").replace("');", "")
+                mysql_config['host'] = line.replace("define('DB_HOST', '", "").replace("');", "").rstrip()
             if "define('DB_NAME'," in line:
-                mysql_config['name'] = line.replace("define('DB_NAME', '", "").replace("');", "")
+                mysql_config['name'] = line.replace("define('DB_NAME', '", "").replace("');", "").rstrip()
 
     with open(args.mailguardian_config, 'r') as f:
         data = json.load(f)
