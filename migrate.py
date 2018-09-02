@@ -134,7 +134,7 @@ if __name__ == "__main__":
         }
         pgsql_cursor.execute("INSERT INTO mail_spamreport (id, contents, message_id) VALUES ('{id}', '{contents}', '{message_id}')".format(**vals))
         transport_log_cursor = mysql_conn2.cursor()
-        transport_log_cursor.execute("SELECT * FROM mtalog WHERE msg_id={0}".format(message_id))
+        transport_log_cursor.execute("SELECT * FROM mtalog WHERE msg_id='{0}'".format(message_id))
         for entry in transport_log_cursor:
             vals = {
                 'id': uuid.uuid4(),
