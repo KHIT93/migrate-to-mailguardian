@@ -55,7 +55,8 @@ if __name__ == "__main__":
     print('Successfully connected to source MySQL database for MailWatch' + chr(13))
     
     try:
-        pgsql_conn = psycopg2.connect(dbname=pgsql_config['name'], user=pgsql_config['username'], password=pgsql_config['password'], host=pgsql_config['host'], port=pgsql_config['port'], sslmode=pgsql_config['sslmode'], autocommit=True)
+        pgsql_conn = psycopg2.connect(dbname=pgsql_config['name'], user=pgsql_config['username'], password=pgsql_config['password'], host=pgsql_config['host'], port=pgsql_config['port'], sslmode=pgsql_config['sslmode'])
+        pgsql_conn.autocommit = True
     except psycopg2.OperationalError as e:
         print(e)
         exit()
