@@ -43,6 +43,7 @@ if __name__ == "__main__":
 
     try:
         mysql_conn = mysql.connector.connect(host=mysql_config['host'], user=mysql_config['username'], passwd=mysql_config['password'], db=mysql_config['name'])
+        mysql_conn2 = mysql.connector.connect(host=mysql_config['host'], user=mysql_config['username'], passwd=mysql_config['password'], db=mysql_config['name'])
     except mysql.connector.Error as e:
         print(e)
         exit()
@@ -132,7 +133,7 @@ if __name__ == "__main__":
             'message_id': message_id
         }
         pgsql_cursor.execute("INSERT INTO mail_spamreport (id, contents, message_id) VALUES ('{id}', '{contents}', '{message_id}')".format(**vals))
-        transport_log_cursor = mysql_conn.cursor()
+        transport_log_cursor = mysql_conn2.cursor()
         transport_log_cursor.execute("SELECT * FROM mtalog WHERE msg_id={0}".format(message_id))
         for entry in transport_log_cursor:
             vals = {
@@ -241,7 +242,7 @@ if __name__ == "__main__":
             pgsql_cursor.execute("SELECT id from domains_domain WHERE name='{0}' LIMIT 1".format(user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
             domain_id = pgsql_cursor.fetchone()[0]
             pgsql_cursor.execute("INSERT INTO core_user_domains (user_id, domain_id) VALUES('{0}', '{1}')".format(user_id, domain_id))
-            domains_cursor = mysql_conn.cursor()
+            domains_cursor = mysql_conn2.cursor()
             domains_cursor.execute("SELECT * FROM domaintable WHERE domainadmin='{0}'".format(user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
             for entry in domains_cursor.fetchall():
                 vals = {
