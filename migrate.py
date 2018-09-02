@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
 
     try:
-        mysql_conn = mysql.connector.connect(host=mysql_config['host'], user=mysql_config['username'], passwd=mysql_config['password'], db=mysql_config['name'], buffered=True)
+        mysql_conn = mysql.connector.connect(host=mysql_config['host'], user=mysql_config['username'], passwd=mysql_config['password'], db=mysql_config['name'])
     except mysql.connector.Error as e:
         print(e)
         exit()
