@@ -40,9 +40,6 @@ if __name__ == "__main__":
             if 'sslmode' in data['database']['options']:
                 pgsql_config['sslmode'] = data['database']['options']['sslmode']
 
-    print(mysql_config)
-    print(pgsql_config)
-    exit()
 
     try:
         mysql_conn = mysql.connector.connect(host=mysql_config['host'], user=mysql_config['username'], passwd=mysql_config['password'], db=mysql_config['name'])
