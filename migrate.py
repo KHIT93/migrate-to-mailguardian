@@ -60,15 +60,18 @@ if __name__ == "__main__":
     print('Successfully connected to source and destination datastorage' + chr(13))
     pgsql_cursor = pgsql_conn.cursor()
     mysql_cursor = mysql_conn.cursor()
+    print('Getting list of tables from source database' + chr(13))
     mysql_cursor.execute("SHOW TABLES")
     tables = []
     for row in mysql_cursor.fetchall():
         tables.append(row[0])
 
     mysql_cursor = mysql_conn.cursor(dictionary=True)
+    print('Counting maillog entries to process' + chr(13))
     mysql_cursor.execute("SELECT count(id) FROM maillog")
     total = mysql_cursor.fetchone()[0]
     count = 0
+    print('Collecting maillog entries to process' + chr(13))
     mysql_cursor.execute("SELECT * FROM maillog")
     for message in mysql_cursor.fetchall():
         print('[{0}%] :: Processing message {1}'.format((int)(count/total), message['id']))
