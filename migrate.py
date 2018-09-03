@@ -153,6 +153,7 @@ if __name__ == "__main__":
                 'delay': entry['delay']
             }
             pgsql_cursor.execute("INSERT INTO mail_transportlog (id, timestamp, message_id, transport_host, transport_type, relay_host, dsn, dsn_message, delay) VALUES(%(id)s, %(timestamp)s, %(message_id)s, %(transport_host)s, %(transport_type)s, %(relay_host)s, %(dsn)s, %(dsn_message)s, %(delay)s)", (vals))
+        pgsql_conn.commit()
         count += 1
     mysql_cursor.execute("SELECT count(id) as id__count FROM blacklist")
     total = mysql_cursor.fetchone()['id__count']
@@ -168,6 +169,7 @@ if __name__ == "__main__":
             'listing_type': 'blacklisted'
         }
         pgsql_cursor.execute("INSERT INTO list_entries (id, from_address, to_address, to_domain, listing_type) VALUES(%(id)s, %(from_address)s, %(to_address)s, %(to_domain)s, %(listing_type)s)", (vals))
+        pgsql_conn.commit()
         count += 1
 
     mysql_cursor.execute("SELECT count(id) as id__count FROM blacklist")
@@ -184,6 +186,7 @@ if __name__ == "__main__":
             'listing_type': 'whitelisted'
         }
         pgsql_cursor.execute("INSERT INTO list_entries (id, from_address, to_address, to_domain, listing_type) VALUES(%(id)s, %(from_address)s, %(to_address)s, %(to_domain)s, %(listing_type)s)", (vals))
+        pgsql_conn.commit()
         count += 1
     
     if 'smtpaccess' in tables:
@@ -201,6 +204,7 @@ if __name__ == "__main__":
                 'hostname': entry['smtpvalue']
             }
             pgsql_cursor.execute("INSERT INTO mail_smtprelay (id, ip_address, comment, active, hostname) VALUES(%(id)s, %(ip_address)s, %(comment)s, {active}, %(hostname)s)", (vals))
+            pgsql_conn.commit()
             count += 1
     if 'domaintable' in tables:
         mysql_cursor.execute("SELECT count(id) as id__count FROM domaintable")
@@ -221,6 +225,8 @@ if __name__ == "__main__":
                 'allowed_accounts': entry['accountno']
             }
             pgsql_cursor.execute("INSERT INTO doamins_domain (id, name, destination, relay_type, created_timestamp, updated_timestamp, active, catchall, allowed_accounts) VALUES(%(id)s, %(name)s, %(destination)s, %(relay_type)s, %(created_timestamp)s, %(updated_timestamp)s, %(active)s, %(catchall)s, %(allowed_accounts)s", (vals))
+            pgsql_conn.commit()
+            count += 1
     mysql_cursor.execute("SELECT count(id) as id__count FROM users")
     total = mysql_cursor.fetchone()['id__count']
     count = 0
@@ -253,6 +259,7 @@ if __name__ == "__main__":
                 pgsql_cursor.execute("SELECT id FROM domains_domain WHERE name='{0}'".format(entry['domainname']))
                 domain_id = pgsql_cursor.fetchone()[0]
                 pgsql_cursor.execute("INSERT INTO core_user_domains (user_id, domain_id) VALUES(%s, %s)", (user_id, domain_id))
+        pgsql_conn.commit()
         count += 1
 
     mysql_conn.close()
