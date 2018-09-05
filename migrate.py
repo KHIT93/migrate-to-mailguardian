@@ -138,7 +138,7 @@ if __name__ == "__main__":
             'message_id': message_id
         }
         pgsql_cursor.execute("INSERT INTO mail_spamreport (id, contents, message_id) VALUES (%(id)s, %(contents)s, %(message_id)s)", (vals))
-        transport_log_cursor = mysql_conn2.cursor()
+        transport_log_cursor = mysql_conn2.cursor(dictionary=True)
         transport_log_cursor.execute("SELECT * FROM mtalog WHERE msg_id='{0}'".format(message_id))
         for entry in transport_log_cursor:
             vals = {
@@ -155,6 +155,11 @@ if __name__ == "__main__":
             pgsql_cursor.execute("INSERT INTO mail_transportlog (id, timestamp, message_id, transport_host, transport_type, relay_host, dsn, dsn_message, delay) VALUES(%(id)s, %(timestamp)s, %(message_id)s, %(transport_host)s, %(transport_type)s, %(relay_host)s, %(dsn)s, %(dsn_message)s, %(delay)s)", (vals))
         pgsql_conn.commit()
         count += 1
+    transport_log_cursor.close()
+    pgsql_cursor.close()
+    mysql_cursor.close()
+    pgsql_cursor = pgsql_conn.cursor()
+    mysql_cursor = mysql_conn.cursor(dictionary=True)
     mysql_cursor.execute("SELECT count(id) as id__count FROM blacklist")
     total = mysql_cursor.fetchone()['id__count']
     count = 0
@@ -171,7 +176,10 @@ if __name__ == "__main__":
         pgsql_cursor.execute("INSERT INTO list_entries (id, from_address, to_address, to_domain, listing_type) VALUES(%(id)s, %(from_address)s, %(to_address)s, %(to_domain)s, %(listing_type)s)", (vals))
         pgsql_conn.commit()
         count += 1
-
+    pgsql_cursor.close()
+    mysql_cursor.close()
+    pgsql_cursor = pgsql_conn.cursor()
+    mysql_cursor = mysql_conn.cursor(dictionary=True)
     mysql_cursor.execute("SELECT count(id) as id__count FROM blacklist")
     total = mysql_cursor.fetchone()['id__count']
     count = 0
@@ -188,8 +196,11 @@ if __name__ == "__main__":
         pgsql_cursor.execute("INSERT INTO list_entries (id, from_address, to_address, to_domain, listing_type) VALUES(%(id)s, %(from_address)s, %(to_address)s, %(to_domain)s, %(listing_type)s)", (vals))
         pgsql_conn.commit()
         count += 1
-    
+    pgsql_cursor.close()
+    mysql_cursor.close()
     if 'smtpaccess' in tables:
+        pgsql_cursor = pgsql_conn.cursor()
+        mysql_cursor = mysql_conn.cursor(dictionary=True)
         mysql_cursor.execute("SELECT count(id) as id__count FROM smtpaccess")
         total = mysql_cursor.fetchone()['id__count']
         count = 0
@@ -206,7 +217,11 @@ if __name__ == "__main__":
             pgsql_cursor.execute("INSERT INTO mail_smtprelay (id, ip_address, comment, active, hostname) VALUES(%(id)s, %(ip_address)s, %(comment)s, {active}, %(hostname)s)", (vals))
             pgsql_conn.commit()
             count += 1
+        pgsql_cursor.close()
+        mysql_cursor.close()
     if 'domaintable' in tables:
+        pgsql_cursor = pgsql_conn.cursor()
+        mysql_cursor = mysql_conn.cursor(dictionary=True)
         mysql_cursor.execute("SELECT count(id) as id__count FROM domaintable")
         total = mysql_cursor.fetchone()['id__count']
         count = 0
@@ -227,6 +242,8 @@ if __name__ == "__main__":
             pgsql_cursor.execute("INSERT INTO doamins_domain (id, name, destination, relay_type, created_timestamp, updated_timestamp, active, catchall, allowed_accounts) VALUES(%(id)s, %(name)s, %(destination)s, %(relay_type)s, %(created_timestamp)s, %(updated_timestamp)s, %(active)s, %(catchall)s, %(allowed_accounts)s", (vals))
             pgsql_conn.commit()
             count += 1
+    pgsql_cursor = pgsql_conn.cursor()
+    mysql_cursor = mysql_conn.cursor(dictionary=True)
     mysql_cursor.execute("SELECT count(id) as id__count FROM users")
     total = mysql_cursor.fetchone()['id__count']
     count = 0
@@ -261,7 +278,12 @@ if __name__ == "__main__":
                 pgsql_cursor.execute("INSERT INTO core_user_domains (user_id, domain_id) VALUES(%s, %s)", (user_id, domain_id))
         pgsql_conn.commit()
         count += 1
-
+    domains_cursor.close()
+    pgsql_cursor.close()
+    mysql_cursor.close()
+    pgsql_cursor = pgsql_conn.cursor()
+    mysql_cursor = mysql_conn.cursor()
+    mysql_conn2.close()
     mysql_conn.close()
 
     pgsql_cursor.close()
