@@ -83,13 +83,13 @@ if __name__ == "__main__":
     count = 0
     messages_sql = []
     if total > 10000:
-        messages_sql.append("SELECT * FROM maillog LIMIT 10000 order_by timestamp")
+        messages_sql.append("SELECT * FROM maillog order_by timestamp LIMIT 10000")
         to_process = 10000
         while to_process < total:
             to_add = 10000
             if to_process + 10000 > total:
                 to_add = total - to_process
-            messages_sql.append("SELECT * FROM maillog LIMIT {0} OFFSET {1}".format(to_add, to_process))
+            messages_sql.append("SELECT * FROM maillog order_by timestamp LIMIT {0} OFFSET {1}".format(to_add, to_process))
             to_process += to_add
     else:
         messages_sql = ["SELECT * FROM maillog"]
