@@ -96,10 +96,10 @@ if __name__ == "__main__":
     print('Collecting maillog entries to process' + chr(13))
     #mysql_cursor.execute("SELECT * FROM maillog")
     for query in messages_sql:
-        pgsql_cursor = pgsql_conn.cursor()
         mysql_cursor = mysql_conn.cursor(dictionary=True)
         mysql_cursor.execute(query)
         for message in mysql_cursor.fetchall():
+            pgsql_cursor = pgsql_conn.cursor()
             print('[{0}%] :: Processing message {1}'.format(round((count/total) * 100, 2), message['id']))
             vals = {
                 'id': str(uuid.uuid4()),
@@ -177,7 +177,7 @@ if __name__ == "__main__":
             count += 1
             pgsql_cursor.close()
             mysql_cursor.close()
-    transport_log_cursor.close()
+            transport_log_cursor.close()
     pgsql_cursor.close()
     mysql_cursor.close()
     pgsql_cursor = pgsql_conn.cursor()
