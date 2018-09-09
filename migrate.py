@@ -100,8 +100,9 @@ if __name__ == "__main__":
         try:
             mysql_cursor = mysql_conn.cursor(dictionary=True)
         except:
-            print('[{0}%] :: Processing message {1} :: MySQL Connection Error. Waiting 30 seconds before retrying'.format(round((count/total) * 100, 2), message['id']))
-            time.sleep(30)
+            print('[{0}%] :: Processing message {1} :: MySQL Connection Error. Waiting 120 seconds before retrying'.format(round((count/total) * 100, 2), message['id']))
+            time.sleep(120)
+            print('[{0}%] :: Processing message {1} :: MySQL Connection Error. Retrying connection'.format(round((count/total) * 100, 2), message['id']))
             mysql_cursor = mysql_conn.cursor(dictionary=True)
         mysql_cursor.execute(query)
         for message in mysql_cursor.fetchall():
