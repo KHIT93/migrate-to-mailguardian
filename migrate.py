@@ -97,7 +97,12 @@ if __name__ == "__main__":
     print('Collecting maillog entries to process' + chr(13))
     #mysql_cursor.execute("SELECT * FROM maillog")
     for query in messages_sql:
-        mysql_cursor = mysql_conn.cursor(dictionary=True)
+        try:
+            mysql_cursor = mysql_conn.cursor(dictionary=True)
+        except:
+            print('[{0}%] :: Processing message {1} :: MySQL Connection Error. Waiting 30 seconds before retrying'.format(round((count/total) * 100, 2), message['id']))
+            time.sleep(30)
+            mysql_cursor = mysql_conn.cursor(dictionary=True)
         mysql_cursor.execute(query)
         for message in mysql_cursor.fetchall():
             try:
