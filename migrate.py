@@ -336,7 +336,7 @@ if __name__ == "__main__":
         dlist.append(domain[0])
     pgsql_cursor.close()
     pgsql_cursor = pgsql_conn.cursor()
-    pgsql_cursor.execute("SELECT id, name FROM domains_domain WHERE id NOT IN (%s)".format(','.join(dlist)))
+    pgsql_cursor.execute("SELECT id, name FROM domains_domain WHERE id NOT IN ({0})".format("','".join(dlist)))
     for domain in pgsql_cursor:
         errors.append('No users connected to domain {0}. Please check'.format(domain[1]))
 
