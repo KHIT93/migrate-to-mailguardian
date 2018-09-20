@@ -248,7 +248,7 @@ if __name__ == "__main__":
                 'active': True,
                 'hostname': entry['smtpvalue']
             }
-            pgsql_cursor.execute("INSERT INTO mail_smtprelay (id, ip_address, comment, active, hostname) VALUES(%(id)s, %(ip_address)s, %(comment)s, {active}, %(hostname)s)", (vals))
+            pgsql_cursor.execute("INSERT INTO mail_smtprelay (id, ip_address, comment, active, hostname) VALUES(%(id)s, %(ip_address)s, %(comment)s, %(active)s, %(hostname)s)", (vals))
             pgsql_conn.commit()
             count += 1
         pgsql_cursor.close()
