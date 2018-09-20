@@ -261,7 +261,7 @@ if __name__ == "__main__":
         count = 0
         mysql_cursor.execute("SELECT * FROM domaintable")
         for entry in mysql_cursor:
-            print('[{0}%] :: Processing domain {1}'.format(round((count/total) * 100, 2), entry['id']))
+            print('[{0}%] :: Processing domain {1}'.format(round((count/total) * 100, 2), entry['domainname']))
             vals = {
                 'id': str(uuid.uuid4()),
                 'name': entry['domainname'],
