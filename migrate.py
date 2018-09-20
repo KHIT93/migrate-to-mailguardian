@@ -274,7 +274,7 @@ if __name__ == "__main__":
                 'allowed_accounts': entry['accountno'],
                 'receive_type': 'failover'
             }
-            pgsql_cursor.execute("INSERT INTO doamins_domain (id, name, destination, relay_type, created_timestamp, updated_timestamp, active, catchall, allowed_accounts, receive_type) VALUES(%(id)s, %(name)s, %(destination)s, %(relay_type)s, %(created_timestamp)s, %(updated_timestamp)s, %(active)s, %(catchall)s, %(allowed_accounts)s, %(receive_type)s)", (vals))
+            pgsql_cursor.execute("INSERT INTO domains_domain (id, name, destination, relay_type, created_timestamp, updated_timestamp, active, catchall, allowed_accounts, receive_type) VALUES(%(id)s, %(name)s, %(destination)s, %(relay_type)s, %(created_timestamp)s, %(updated_timestamp)s, %(active)s, %(catchall)s, %(allowed_accounts)s, %(receive_type)s)", (vals))
             pgsql_conn.commit()
             count += 1
     pgsql_cursor = pgsql_conn.cursor()
