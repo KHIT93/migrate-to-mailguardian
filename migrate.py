@@ -310,7 +310,8 @@ if __name__ == "__main__":
             pgsql_cursor.execute("SELECT id from domains_domain WHERE name='{0}' LIMIT 1".format(user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
             data = pgsql_cursor.fetchone()
             if not data:
-                print('[{0}%] :: Processing user {1} :: No domains found'.format(round((count/total) * 100, 2), user['id']))
+                print('[{0}%] :: Processing user {1} :: No domains found'.format(round((count/total) * 100, 2), user['username']))
+                errors.append("No domains could be found for user {0}. Please check".format(user['username']))
                 continue
             primary_domain_id = data[0]
             pgsql_cursor.execute("INSERT INTO core_user_domains (user_id, domain_id) VALUES(%s, %s)", (user_id, primary_domain_id))
@@ -326,8 +327,19 @@ if __name__ == "__main__":
     domains_cursor.close()
     pgsql_cursor.close()
     mysql_cursor.close()
+    print('Checking relationship between users and domains seen from the domain as the starting point...')
     pgsql_cursor = pgsql_conn.cursor()
-    mysql_cursor = mysql_conn.cursor()
+    
+    pgsql_cursor.execute("SELECT domain_id FROM core_user_domains")
+    dlist = []
+    for domain in pgsql_cursor:
+        dlist.append(domain[0])
+    pgsql_cursor.close()
+    pgsql_cursor = pgsql_conn.cursor()
+    pgsql_cursor.execute("SELECT id, name FROM domains_domain WHERE id NOT IN ({0})".format(','.join(dlist)))
+    for domain in pgsql_cursor:
+        errors.append('No users connected to domain {0}. Please check'.format(domain[1]))
+
     mysql_conn2.close()
     mysql_conn.close()
 
@@ -337,3 +349,7 @@ if __name__ == "__main__":
     start_ts = time.mktime(start_time.timetuple())
     stop_ts = time.mktime(stop_time.timetuple())
     print('Started {0} and stopped {1}. Total time spent is {2} minutes'.format(start_time, stop_time, int(start_ts-stop_ts) / 60))
+    if errors:
+        print('There were errors or warnings during execution')
+        for error in errors:
+            print(error)
