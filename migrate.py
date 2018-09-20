@@ -308,7 +308,11 @@ if __name__ == "__main__":
         if 'domaintable' in tables:
             user_id = pgsql_cursor.fetchone()[0]
             pgsql_cursor.execute("SELECT id from domains_domain WHERE name='{0}' LIMIT 1".format(user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
-            primary_domain_id = pgsql_cursor.fetchone()[0]
+            data = pgsql_cursor.fetchone()
+            if not 0 in data:
+                print('[{0}%] :: Processing user {1} :: No domains found'.format(round((count/total) * 100, 2), user['id']))
+                continue
+            primary_domain_id = data[0]
             pgsql_cursor.execute("INSERT INTO core_user_domains (user_id, domain_id) VALUES(%s, %s)", (user_id, primary_domain_id))
             domains_cursor = mysql_conn2.cursor(dictionary=True)
             domains_cursor.execute("SELECT * FROM domaintable WHERE domainadmin='{0}'".format(user['username'] if not '@' in user['username'] else user['username'].split('@')[1]))
